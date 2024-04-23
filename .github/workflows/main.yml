@@ -39,7 +39,8 @@ jobs:
           echo 'const char *password = "Bar";' >> src/secrets.h
 
       - name: Build PlatformIO Project
-        run: pio ci -e ${{ matrix.pioEnv }} -c ./platformio.ini ./
+        run: |
+          pio run -e ${{ matrix.pioEnv }}
 
       - name: Publish firmware
         uses: actions/upload-artifact@v4
