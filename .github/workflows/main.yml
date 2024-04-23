@@ -6,12 +6,12 @@ jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
-        matrix:
-          pioEnv:
-            - espair1
-            - espair2
-            - espair3
-            # - espair4
+      matrix:
+        pioEnv:
+          - espair1
+          - espair2
+          - espair3
+          # - espair4
 
     steps:
       - name: Checkout
@@ -32,6 +32,11 @@ jobs:
 
       - name: Install PlatformIO Core
         run: pip install --upgrade platformio
+
+      - name: Generate secrets.h
+        run: |
+          echo 'const char *ssid = "Foo";' > src/secrets.h
+          echo 'const char *password = "Bar";' >> src/secrets.h
 
       - name: Build PlatformIO Project
         run: pio ci -e ${{ matrix.pioEnv }} -c ./platformio.ini ./
