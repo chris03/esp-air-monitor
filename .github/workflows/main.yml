@@ -1,0 +1,43 @@
+name: PlatformIO CI
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+        matrix:
+          pioEnv:
+            - espair1
+            - espair2
+            - espair3
+            # - espair4
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.platformio/.cache
+          key: ${{ runner.os }}-pio
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install PlatformIO Core
+        run: pip install --upgrade platformio
+
+      - name: Build PlatformIO Project
+        run: pio ci -e ${{ matrix.pioEnv }} -c ./platformio.ini ./
+
+      - name: Publish artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.pioEnv }}
+          path: .pio/build/**/firmware.*
