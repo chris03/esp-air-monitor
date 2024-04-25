@@ -7,58 +7,17 @@
 #include "wifi.h"
 #include "ota.h"
 
-#define ST(A) #A
-#define STR(A) ST(A)
+#define STRINGIFY(x) #x
+#define STR(x) STRINGIFY(x)
 
-/*
- *	ESP Air 1
- */
-#ifdef IS_AIR1
-#define NAME "ESP Air1"
-#define PIN_RX_TO_S8 D7
-#define PIN_TX_TO_S8 D8
-#define BME_ENABLED
-#define BME_I2C_ADDRESS 0x76
-#endif
-
-/*
- *	ESP Air 2
- */
-#ifdef IS_AIR2
-#define NAME "ESP Air2"
-#define PIN_RX_TO_S8 14
-#define PIN_TX_TO_S8 12
-#define SI7021_ENABLED
-#endif
-
-/*
- *	ESP Air 3
- */
-#ifdef IS_AIR3
-#define NAME "ESP Air3"
-#define PIN_RX_TO_S8 14
-#define PIN_TX_TO_S8 12
-#define BME_ENABLED
-#define BME_I2C_ADDRESS 0x77
-#endif
-
-/*
- *	ESP Air 4
- */
-#ifdef IS_AIR4
-#define NAME "ESP Air4"
-TODO :
-// #define PIN_RX_TO_S8 14
-// #define PIN_TX_TO_S8 12
-// #define BME_ENABLED
-// #define BME_I2C_ADDRESS 0x77
-#endif
+// Uses BUILD_ENV_NAME (defined in platform.ini) to generate name of file to include
+#include STR(boards/BUILD_ENV_NAME.h)
 
 #ifdef BME_ENABLED
 #include <Wire.h>
 #include "SparkFunBME280.h"
 
-    BME280 bmeSensor;
+BME280 bmeSensor;
 bool bmeSensorOk = false;
 #endif
 
@@ -186,7 +145,7 @@ void setup()
   webServer.on("/info", []()
                { 
                  char buffer[128];
-                 int charsWritten = snprintf(buffer, sizeof(buffer), "{\"name\": %s, \"pioenv\": %s, \"built\": %s}", NAME, STR(BUILD_ENV_NAME), STR(BUILD_TIME));
+                 int charsWritten = snprintf(buffer, sizeof(buffer), "{\"name\": \"%s\", \"pioenv\": \"%s\", \"built\": %s, \"info\": \"%s\"}", NAME, STR(BUILD_ENV_NAME), STR(BUILD_TIME), boardInfo());
 
                 webServer.send(200, "application/json; charset=utf-8", buffer, charsWritten); });
 
